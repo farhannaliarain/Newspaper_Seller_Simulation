@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newspaper Sales Simulation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            background-color: #0077b6;
+            padding: 20px;
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        h2 {
+            text-align: center;
+            color: #0077b6;
+            margin-top: 20px;
+            font-size: 2rem;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .input-group label {
+            flex-basis: 45%;
+            font-size: 1.1rem;
+            color: #555;
+        }
+        .input-group input {
+            flex-basis: 50%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        .input-group input:focus {
+            border-color: #0077b6;
+            outline: none;
+        }
+        button {
+            background-color: #0077b6;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        button:hover {
+            background-color: #005f86;
+            transform: translateY(-3px);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            text-align: center;
+            padding: 12px;
+            font-size: 0.95rem;
+        }
+        th {
+            background-color: #0077b6;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .result {
+            text-align: center;
+            font-size: 1.7rem;
+            color: #0077b6;
+            margin: 20px 0;
+        }
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .input-group label, .input-group input {
+                flex-basis: 100%;
+            }
+            button {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Newspaper Sales Simulation</h1>
+
+<div class="container">
+    <div class="input-group">
+        <label for="papersBought">Number of Newspapers Bought:</label>
+        <input type="number" id="papersBought" placeholder="Enter number of papers bought" required>
+    </div>
+
+    <div class="input-group">
+        <label for="buyingCost">Buying Cost (Rs.):</label>
+        <input type="number" id="buyingCost" placeholder="Enter buying cost" required>
+    </div>
+
+    <div class="input-group">
+        <label for="sellingPrice">Selling Price (Rs.):</label>
+        <input type="number" id="sellingPrice" placeholder="Enter selling price" required>
+    </div>
+
+    <div class="input-group">
+        <label for="scrapPrice">Scrap Price (Rs.):</label>
+        <input type="number" id="scrapPrice" placeholder="Enter scrap price" required>
+    </div>
+
+    <div class="input-group">
+        <label for="lostProfit">Lost Profit for Excess Demand (Rs.):</label>
+        <input type="number" id="lostProfit" placeholder="Enter lost profit" required>
+    </div>
+
+    <div class="input-group">
+        <label for="numDays">Number of Days to Simulate:</label>
+        <input type="number" id="numDays" placeholder="Enter number of days" required>
+    </div>
+
+    <!-- Inputs for Newsday Probabilities -->
+    <h2>Newsday Probabilities</h2>
+    <div class="input-group">
+        <label for="goodProb">Good Day Probability (0-1):</label>
+        <input type="number" id="goodProb" step="0.01" placeholder="Enter good day probability" required>
+    </div>
+    <div class="input-group">
+        <label for="fairProb">Fair Day Probability (0-1):</label>
+        <input type="number" id="fairProb" step="0.01" placeholder="Enter fair day probability" required>
+    </div>
+    <div class="input-group">
+        <label for="poorProb">Poor Day Probability (0-1):</label>
+        <input type="number" id="poorProb" step="0.01" placeholder="Enter poor day probability" required>
+    </div>
+
+    <!-- Inputs for Demand Table -->
+    <h2>Demand Probabilities</h2>
+    <h3>Good Day</h3>
+    <div class="input-group">
+        <label for="goodDemand">Demand Values (comma-separated):</label>
+        <input type="text" id="goodDemand" placeholder="Enter demand values" required>
+    </div>
+    <div class="input-group">
+        <label for="goodProbTable">Demand Probabilities (comma-separated):</label>
+        <input type="text" id="goodProbTable" placeholder="Enter demand probabilities" required>
+    </div>
+
+    <h3>Fair Day</h3>
+    <div class="input-group">
+        <label for="fairDemand">Demand Values (comma-separated):</label>
+        <input type="text" id="fairDemand" placeholder="Enter demand values" required>
+    </div>
+    <div class="input-group">
+        <label for="fairProbTable">Demand Probabilities (comma-separated):</label>
+        <input type="text" id="fairProbTable" placeholder="Enter demand probabilities" required>
+    </div>
+
+    <h3>Poor Day</h3>
+    <div class="input-group">
+        <label for="poorDemand">Demand Values (comma-separated):</label>
+        <input type="text" id="poorDemand" placeholder="Enter demand values" required>
+    </div>
+    <div class="input-group">
+        <label for="poorProbTable">Demand Probabilities (comma-separated):</label>
+        <input type="text" id="poorProbTable" placeholder="Enter demand probabilities" required>
+    </div>
+
+    <div class="input-group">
+        <label for="newsdayDigits">Random Digits for Newsday (comma-separated or use the generator):</label>
+        <input type="text" id="newsdayDigits" placeholder="Enter or generate digits" required>
+        <button onclick="generateRandomDigits('newsdayDigits')">Generate Random Digits</button>
+    </div>
+
+    <div class="input-group">
+        <label for="demandDigits">Random Digits for Demand (comma-separated or use the generator):</label>
+        <input type="text" id="demandDigits" placeholder="Enter or generate digits" required>
+        <button onclick="generateRandomDigits('demandDigits')">Generate Random Digits</button>
+    </div>
+
+    <button onclick="simulate()">Run Simulation</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Newsday Type</th>
+                <th>Demand</th>
+                <th>Papers Sold</th>
+                <th>Revenue from Sales</th>
+                <th>Cost of Newspapers</th>
+                <th>Scrap Value</th>
+                <th>Lost Profit</th>
+                <th>Total Profit</th>
+            </tr>
+        </thead>
+        <tbody id="simulation-results"></tbody>
+    </table>
+
+    <div class="result">
+        <h2>Total Profit: Rs. <span id="total-profit">0</span></h2>
+
+    </div>
+</div>
+
+
+<script>
+  function simulate() {
+    const papersBought = parseInt(document.getElementById('papersBought').value) || 0;
+    const buyingCost = parseFloat(document.getElementById('buyingCost').value) || 0;
+    const sellingPrice = parseFloat(document.getElementById('sellingPrice').value) || 0;
+    const scrapPrice = parseFloat(document.getElementById('scrapPrice').value) || 0;
+    const lostProfit = parseFloat(document.getElementById('lostProfit').value) || 0;
+    const numDays = parseInt(document.getElementById('numDays').value) || 0;
+
+    const goodProb = parseFloat(document.getElementById('goodProb').value) || 0;
+    const fairProb = parseFloat(document.getElementById('fairProb').value) || 0;
+    const poorProb = parseFloat(document.getElementById('poorProb').value) || 0;
+
+    const goodDemand = document.getElementById('goodDemand').value.split(',').map(Number);
+    const goodProbTable = document.getElementById('goodProbTable').value.split(',').map(Number);
+    const fairDemand = document.getElementById('fairDemand').value.split(',').map(Number);
+    const fairProbTable = document.getElementById('fairProbTable').value.split(',').map(Number);
+    const poorDemand = document.getElementById('poorDemand').value.split(',').map(Number);
+    const poorProbTable = document.getElementById('poorProbTable').value.split(',').map(Number);
+
+    const newsdayDigits = document.getElementById('newsdayDigits').value.split(',').map(Number);
+    const demandDigits = document.getElementById('demandDigits').value.split(',').map(Number);
+
+    let totalProfit = 0;
+    let simulationTable = '';
+
+    for (let i = 0; i < numDays; i++) {
+        let newsdayType = getNewsdayType(newsdayDigits[i], goodProb, fairProb, poorProb);
+        let demand = getDemand(demandDigits[i], newsdayType, goodDemand, goodProbTable, fairDemand, fairProbTable, poorDemand, poorProbTable);
+        let papersSold = Math.min(papersBought, demand);
+        let revenueFromSales = papersSold * sellingPrice;
+        let costOfNewspapers = papersBought * buyingCost;
+        let scrapValue = (papersBought > demand) ? (papersBought - demand) * scrapPrice : 0;
+        let lostProfitValue = (demand > papersBought) ? (demand - papersSold) * lostProfit : 0;
+        let totalDayProfit = revenueFromSales - costOfNewspapers + scrapValue - lostProfitValue;
+
+        console.log(`Day ${i + 1}:`);
+        console.log(`Demand: ${demand}, Papers Sold: ${papersSold}, Revenue: ${revenueFromSales}, Cost: ${costOfNewspapers}, Scrap Value: ${scrapValue}, Lost Profit: ${lostProfitValue}, Total Day Profit: ${totalDayProfit}`);
+
+        totalProfit += totalDayProfit;
+
+        simulationTable += `
+            <tr>
+                <td>${i + 1}</td>
+                <td>${newsdayType}</td>
+                <td>${demand}</td>
+                <td>${papersSold}</td>
+                <td>${revenueFromSales.toFixed(2)}</td>
+                <td>${costOfNewspapers.toFixed(2)}</td>
+                <td>${scrapValue.toFixed(2)}</td>
+                <td>${lostProfitValue.toFixed(2)}</td>
+                <td>${totalDayProfit.toFixed(2)}</td>
+            </tr>
+        `;
+    }
+
+    document.getElementById('simulation-results').innerHTML = simulationTable;
+    document.getElementById('total-profit').textContent = totalProfit.toFixed(2);
+}
+
+
+    function getNewsdayType(digit, goodProb, fairProb, poorProb) {
+        if (digit < goodProb * 100) return 'Good';
+        if (digit < (goodProb + fairProb) * 100) return 'Fair';
+        return 'Poor';
+    }
+
+    function getDemand(digit, newsdayType, goodDemand, goodProbTable, fairDemand, fairProbTable, poorDemand, poorProbTable) {
+    const demandTable = newsdayType === 'Good' ? goodDemand : (newsdayType === 'Fair' ? fairDemand : poorDemand);
+    const probTable = newsdayType === 'Good' ? goodProbTable : (newsdayType === 'Fair' ? fairProbTable : poorProbTable);
+
+    let cumulativeProb = 0;
+    let startRange = 1;
+
+    for (let i = 0; i < probTable.length; i++) {
+        cumulativeProb += probTable[i];
+        const endRange = Math.floor(cumulativeProb * 100); // Convert cumulative probability to an integer range
+        if (digit >= startRange && digit <= endRange) {
+            return demandTable[i];
+        }
+        startRange = endRange + 1; // Set the start of the next range
+    }
+    
+    return demandTable[demandTable.length - 1]; // Default to last demand if no match
+}
+
+
+    function generateRandomDigits(id) {
+        const digits = Array.from({ length: document.getElementById('numDays').value }, () => Math.floor(Math.random() * 100));
+        document.getElementById(id).value = digits.join(',');
+    }
+</script>
+
+</body>
+</html>
